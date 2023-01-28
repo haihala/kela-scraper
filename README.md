@@ -15,3 +15,7 @@ pip install -r requirements.txt
 
 1. Go to the kela therapeut list and download the page with all therapists
 2. (while venv active) `python scrape.py <downloaded_page.htm> --fields email phone --location <name of the city you want to scrape for>`
+
+## Troubleshooting
+
+- File has to be utf-8 encoded.
