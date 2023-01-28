@@ -7,7 +7,7 @@ def main():
     args = parse_args()
     raw_list = parse_html(args.file)
     locations = find_locations(raw_list)
-    therapists = filter_therapists(raw_list, args.location)
+    therapists = filter_therapists(raw_list, args.locations)
     present_output(therapists, args, locations)
 
 
@@ -18,9 +18,25 @@ def parse_args() -> argparse.Namespace:
         epilog = 'Hope this helps'
     )
 
-    parser.add_argument('file')
-    parser.add_argument('--location')
-    parser.add_argument('--fields', nargs='+')
+    parser.add_argument(
+        'file',
+        help='File to parse from, download the list with all therapists from Kela\'s site.'
+    )
+
+    parser.add_argument(
+        '--locations',
+        required=True,
+        nargs='+',
+        help='Cities for which you are searching for. Case insensitive.'
+    )
+
+    parser.add_argument(
+        '--fields',
+        nargs='+',
+        required=True,
+        choices=['email', 'phone'],
+        help='Fields to get'
+    )
 
     return parser.parse_args()
 
@@ -40,12 +56,18 @@ def parse_html(file: str):
 def find_locations(raw_list):
     return set(item[0] for item in raw_list)
 
-def filter_therapists(raw_list, location):
-    return [item for item in raw_list if item[0].lower() == location.lower()]
+def filter_therapists(raw_list, locations):
+    targets = [location.lower() for location in locations]
+
+    return [
+        item
+        for item in raw_list
+        if item[0].lower() in targets
+    ]
 
 def present_output(therapists, args, locations):
     if len(therapists) == 0:
-        print(f'No therapists found for {args.location}')
+        print(f'No therapists found for {args.locations}')
         print(f'Potential locations: {locations}')
         return
 
