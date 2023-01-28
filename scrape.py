@@ -38,6 +38,12 @@ def parse_args() -> argparse.Namespace:
         help='Fields to get'
     )
 
+    parser.add_argument(
+        '--separator',
+        default=',',
+        help='Separator to put between the thingies (default to comma)'
+    )
+
     return parser.parse_args()
 
 def parse_html(file: str):
@@ -72,13 +78,15 @@ def present_output(therapists, args, locations):
         return
 
     if 'email' in args.fields:
-        present_email(therapists)
+        items = presentable_emails(therapists)
+        present(items, args.separator)
 
     if 'phone' in args.fields:
-        present_phone(therapists)
+        items = presentable_numbers(therapists)
+        present(items, args.separator)
 
 
-def present_email(therapists):
+def presentable_emails(therapists):
     actual_emails = []
     for therapist in therapists:
         try:
@@ -92,10 +100,10 @@ def present_email(therapists):
             pass
 
     print(f'Emails of potential therapists ({len(actual_emails)} addresses):')
-    present(actual_emails)
+    return actual_emails
 
 
-def present_phone(therapists):
+def presentable_numbers(therapists):
     actual_numbers = []
     for therapist in therapists:
         if therapist[1] is None:
@@ -115,10 +123,10 @@ def present_phone(therapists):
 
 
     print(f'Phone numbers of potential therapists ({len(actual_numbers)} numbers):')
-    present(actual_numbers)
+    return actual_numbers
 
-def present(items):
-    print(', '.join(items))
+def present(items, separator):
+    print(separator.join(items))
     print()
 
 
